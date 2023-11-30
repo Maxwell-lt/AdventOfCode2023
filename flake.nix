@@ -20,7 +20,12 @@
 	rustPlatform = pkgs.makeRustPlatform {
 	  rustc = rust;
 	  cargo = rust;
-	};
+        };
+        aocd = pkgs.writeScriptBin "aocd"
+          ''
+            #! /usr/bin/env bash
+            aoc download -d $1 --input-only --input-file input/Day$1
+          '';
       in with pkgs; {
         devShell = mkShell {
 	  buildInputs = [
@@ -30,6 +35,8 @@
             cargo-nextest
             grcov
             cargo-llvm-cov
+            aoc-cli
+            aocd
 	  ];
 
 	  shellHook = ''
