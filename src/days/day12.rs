@@ -60,19 +60,19 @@ impl From<&str> for Record {
 }
 
 impl Record {
-    fn unfold(self) -> Self {
-        let mut unfolded_springs = Vec::with_capacity(5 * self.springs.len() + 4);
-        let mut unfolded_broken = Vec::with_capacity(5 * self.broken.len());
-        for i in 0..5 {
-            unfolded_springs.extend(self.springs.iter());
-            if i != 4 {
-                unfolded_springs.push(Spring::Unknown);
-            }
-            unfolded_broken.extend(self.broken.iter());
-        }
+    //fn unfold(self) -> Self {
+    //    let mut unfolded_springs = Vec::with_capacity(5 * self.springs.len() + 4);
+    //    let mut unfolded_broken = Vec::with_capacity(5 * self.broken.len());
+    //    for i in 0..5 {
+    //        unfolded_springs.extend(self.springs.iter());
+    //        if i != 4 {
+    //            unfolded_springs.push(Spring::Unknown);
+    //        }
+    //        unfolded_broken.extend(self.broken.iter());
+    //    }
 
-        Self { springs: unfolded_springs, broken: unfolded_broken }
-    }
+    //    Self { springs: unfolded_springs, broken: unfolded_broken }
+    //}
 
     fn unknown_count(&self) -> usize {
         self.springs.iter().filter(|s| **s == Spring::Unknown).count()
