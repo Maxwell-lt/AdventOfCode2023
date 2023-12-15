@@ -12,8 +12,8 @@ impl Solver for Day13 {
                 .into_iter()
                 .enumerate()
                 .map(|(i, s)| {
-                    find_vertical_rfln(&s)
-                        .or_else(|| find_horizontal_rfln(&s).map(|n| n * 100))
+                    find_vertical_rfln(&s, 0)
+                        .or_else(|| find_horizontal_rfln(&s, 0).map(|n| n * 100))
                         .expect(&format!("{}: {:?}", i, s))
                 })
                 .sum(),
@@ -28,8 +28,8 @@ impl Solver for Day13 {
                 .into_iter()
                 .enumerate()
                 .map(|(i, s)| {
-                    find_vertical_rfln_smudged(&s)
-                        .or_else(|| find_horizontal_rfln_smudged(&s).map(|n| n * 100))
+                    find_vertical_rfln(&s, 1)
+                        .or_else(|| find_horizontal_rfln(&s, 1).map(|n| n * 100))
                         .expect(&format!("{}: {:?}", i, s))
                 })
                 .sum(),
@@ -64,66 +64,14 @@ fn parse_section(input: &str) -> Vec<Vec<Ground>> {
         .collect_vec()
 }
 
-fn find_vertical_rfln(section: &Vec<Vec<Ground>>) -> Option<i64> {
+fn find_vertical_rfln(section: &Vec<Vec<Ground>>, smudge_count: u32) -> Option<i64> {
     // Iterate over each non-edge position
     for column in 1..(section[0].len()) {
+        let mut fixed_smudges = 0;
         let mut row = 0;
         'row: loop {
             if row == section.len() {
-                return Some(column as i64);
-            }
-            let mut steps = 0i64;
-            loop {
-                let left = column as i64 - steps - 1;
-                let right = column as i64 + steps;
-                if left < 0 || right == section[0].len() as i64 {
-                    row += 1;
-                    break;
-                }
-                if section[row][left as usize] != section[row][right as usize] {
-                    break 'row;
-                }
-                steps += 1;
-            }
-        }
-    }
-    None
-}
-
-fn find_horizontal_rfln(section: &Vec<Vec<Ground>>) -> Option<i64> {
-    // Iterate over each non-edge position
-    for row in 1..(section.len()) {
-        let mut column = 0;
-        'column: loop {
-            if column == section[0].len() {
-                return Some(row as i64);
-            }
-            let mut steps = 0i64;
-            loop {
-                let up = row as i64 - steps - 1;
-                let down = row as i64 + steps;
-                if up < 0 || down == section.len() as i64 {
-                    column += 1;
-                    break;
-                }
-                if section[up as usize][column] != section[down as usize][column] {
-                    break 'column;
-                }
-                steps += 1;
-            }
-        }
-    }
-    None
-}
-
-fn find_vertical_rfln_smudged(section: &Vec<Vec<Ground>>) -> Option<i64> {
-    // Iterate over each non-edge position
-    for column in 1..(section[0].len()) {
-        let mut fixed_smudge = false;
-        let mut row = 0;
-        'row: loop {
-            if row == section.len() {
-                if fixed_smudge {
+                if fixed_smudges == smudge_count {
                     return Some(column as i64);
                 }
                 break;
@@ -137,10 +85,10 @@ fn find_vertical_rfln_smudged(section: &Vec<Vec<Ground>>) -> Option<i64> {
                     break;
                 }
                 if section[row][left as usize] != section[row][right as usize] {
-                    if fixed_smudge {
+                    if fixed_smudges == smudge_count {
                         break 'row;
                     }
-                    fixed_smudge = true;
+                    fixed_smudges += 1;
                 }
                 steps += 1;
             }
@@ -149,14 +97,14 @@ fn find_vertical_rfln_smudged(section: &Vec<Vec<Ground>>) -> Option<i64> {
     None
 }
 
-fn find_horizontal_rfln_smudged(section: &Vec<Vec<Ground>>) -> Option<i64> {
+fn find_horizontal_rfln(section: &Vec<Vec<Ground>>, smudge_count: u32) -> Option<i64> {
     // Iterate over each non-edge position
     for row in 1..(section.len()) {
-        let mut fixed_smudge = false;
+        let mut fixed_smudges = 0;
         let mut column = 0;
         'column: loop {
             if column == section[0].len() {
-                if fixed_smudge {
+                if fixed_smudges == smudge_count {
                     return Some(row as i64);
                 }
                 break;
@@ -170,10 +118,10 @@ fn find_horizontal_rfln_smudged(section: &Vec<Vec<Ground>>) -> Option<i64> {
                     break;
                 }
                 if section[up as usize][column] != section[down as usize][column] {
-                    if fixed_smudge {
+                    if fixed_smudges == smudge_count {
                         break 'column;
                     }
-                    fixed_smudge = true;
+                    fixed_smudges += 1;
                 }
                 steps += 1;
             }
